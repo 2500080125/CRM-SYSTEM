@@ -5,11 +5,14 @@ const SESSION = 'pel-review2-session'
 const emptyState = { users: [], customers: [], opportunities: [], tasks: [], activity: [] }
 const ADMIN = { id: 'pel-admin', name: 'S. Eswar Charan', email: 'admin@pel.local', password: 'PELAdmin@2026', role: 'admin', status: 'Active' }
 const adminNav = ['Dashboard', 'Team Performance', 'Customers', 'Pipeline', 'Tasks', 'Users']
-const userNav = ['Dashboard', 'Customers', 'Pipeline', 'Tasks']
+const userNav = ['Dashboard', 'Customers', 'Pipeline', 'Tasks', 'My Profile']
 const stages = ['New lead', 'Qualified', 'Proposal', 'Negotiation', 'Won', 'Lost']
 
 const readState = () => {
-  try { return { ...emptyState, ...(JSON.parse(localStorage.getItem(STORE)) || {}) } } catch { return emptyState }
+  try {
+    const stored = JSON.parse(localStorage.getItem(STORE)) || {}
+    return { ...emptyState, ...stored, users: Array.isArray(stored.users) ? stored.users.map(user => ({ ...user, role: 'user' })) : [] }
+  } catch { return emptyState }
 }
 const initials = name => name.trim().split(/\s+/).filter(Boolean).slice(0, 2).map(word => word[0]).join('').toUpperCase() || 'U'
 const currency = amount => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(Number(amount || 0))
@@ -71,10 +74,10 @@ function RecordForm({ kind, users, currentUser, onSave, onClose }) {
   </form></section></div>
 }
 
-function UserEditor({ user, onSave, onClose }) {
-  const [form, setForm] = useState({ name: user.name, email: user.email, role: user.role, status: user.status || 'Active' })
-  const update = event => setForm({ ...form, [event.target.name]: event.target.value })
-  return <div className="modal-backdrop" role="presentation"><section className="modal" role="dialog" aria-modal="true"><button className="close" onClick={onClose}>×</button><p className="eyebrow">ADMIN CONTROL</p><h2>Edit user</h2><form onSubmit={event => { event.preventDefault(); onSave({ ...user, ...form }); onClose() }}><label>Full name<input name="name" required value={form.name} onChange={update}/></label><label>Email<input name="email" required type="email" value={form.email} onChange={update}/></label><label>Portal role<select name="role" value={form.role} onChange={update}><option value="user">User portal</option><option value="admin">Administrator portal</option></select></label><label>Account status<select name="status" value={form.status} onChange={update}><option>Active</option><option>Away</option><option>Inactive</option></select></label><button className="primary wide">Save user changes</button></form></section></div>
+function Profile({ user, onSave }) {
+  const [form, setForm] = useState({ name:user.name, email:user.email, status:user.status || 'Active' })
+  const update = event => setForm({ ...form, [event.target.name]:event.target.value })
+  return <section><div className="page-heading"><div><p className="eyebrow">PERSONAL SETTINGS</p><h2>My profile</h2><p className="muted">Only you can change your personal details and status.</p></div></div><article className="panel profile-panel"><form onSubmit={event => { event.preventDefault(); onSave({ ...user, ...form, role:'user' }) }}><label>Full name<input name="name" required value={form.name} onChange={update}/></label><label>Email<input name="email" required type="email" value={form.email} onChange={update}/></label><label>My status<select name="status" value={form.status} onChange={update}><option>Active</option><option>Away</option><option>Inactive</option></select></label><button className="primary">Save my profile</button></form></article></section>
 }
 
 function App() {
@@ -83,8 +86,14 @@ function App() {
   const [session, setSession] = useState(() => { try { return JSON.parse(sessionStorage.getItem(SESSION) || 'null') } catch { return null } })
   const [page, setPage] = useState('Dashboard')
   const [modal, setModal] = useState(null)
-  const [editingUser, setEditingUser] = useState(null)
   useEffect(() => localStorage.setItem(STORE, JSON.stringify(data)), [data])
+  useEffect(() => {
+    if (session?.role !== 'admin' && session && !data.users.some(user => user.id === session.id)) {
+      sessionStorage.removeItem(SESSION)
+      setSession(null)
+      setPage('Dashboard')
+    }
+  }, [data.users, session])
   const authenticate = user => { sessionStorage.setItem(SESSION, JSON.stringify(user)); setSession(user); setData(readState()) }
   const logout = () => { sessionStorage.removeItem(SESSION); setSession(null); setPage('Dashboard') }
   if (!session) return <Auth onAuthenticate={authenticate} adminOnly={adminRoute}/>
@@ -98,7 +107,7 @@ function App() {
   const completeTask = taskId => setData(current => ({ ...current, tasks: current.tasks.map(task => task.id === taskId ? { ...task, done: !task.done } : task) }))
   const activeDeals = opportunities.filter(item => !['Won', 'Lost'].includes(item.stage)); const openTasks = tasks.filter(item => !item.done)
   const ownNav = isAdmin ? adminNav : userNav
-  const updateUser = user => { setData(current => ({ ...current, users: current.users.map(item => item.id === user.id ? user : item), activity: [{ id:id(), ownerId:user.id, actor:'Admin', text:'Admin updated your account details', at:new Date().toISOString() }, ...(current.activity || [])].slice(0, 60) })); if (user.id === session.id) { sessionStorage.setItem(SESSION, JSON.stringify(user)); setSession(user) } }
+  const updateOwnProfile = user => { setData(current => ({ ...current, users: current.users.map(item => item.id === user.id ? user : item), activity: [{ id:id(), ownerId:user.id, actor:user.name, text:'You updated your profile', at:new Date().toISOString() }, ...(current.activity || [])].slice(0, 60) })); sessionStorage.setItem(SESSION, JSON.stringify(user)); setSession(user) }
   const deleteUser = user => { if (user.id === session.id) return window.alert('You cannot remove the account currently signed in.'); if (!window.confirm(`Remove ${user.name}? Their records will remain but become unassigned.`)) return; setData(current => ({ ...current, users: current.users.filter(item => item.id !== user.id), customers: current.customers.map(item => item.ownerId === user.id ? { ...item, ownerId: '' } : item), opportunities: current.opportunities.map(item => item.ownerId === user.id ? { ...item, ownerId: '' } : item), tasks: current.tasks.map(item => item.ownerId === user.id ? { ...item, ownerId: '' } : item), activity: [{ id:id(), ownerId:'', actor:'Admin', text:`Admin removed user: ${user.name}`, at:new Date().toISOString() }, ...(current.activity || [])].slice(0, 60) })) }
   return <div className="app-shell"><aside className="sidebar"><div className="logo"><span className="brand">P</span><div><strong>PEL</strong><small>CRM PLATFORM</small></div></div><p className="side-label">{isAdmin ? 'ADMIN PORTAL' : 'USER PORTAL'}</p><nav>{ownNav.map(item => <button className={page === item ? 'active' : ''} key={item} onClick={() => setPage(item)}>{item}</button>)}</nav><div className="user-box"><span>{initials(session.name)}</span><div><b>{session.name}</b><small>{isAdmin ? 'Administrator' : 'User'}</small></div><button onClick={logout} title="Log out">↗</button></div></aside>
     <main className="workspace"><header><div><p className="eyebrow">{new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</p><h1>{page === 'Dashboard' ? `Good ${new Date().getHours() < 12 ? 'morning' : 'afternoon'}, ${session.name.split(' ')[0]}` : page}</h1></div><button className="ghost" onClick={() => document.body.classList.toggle('dark')}>◐</button></header>
@@ -107,8 +116,9 @@ function App() {
       {page === 'Customers' && <Records title="Customers" items={customers} columns={['name','company','email']} type="customers" onAdd={() => setModal('Customer')} onDelete={removeRecord}/>} 
       {page === 'Pipeline' && <Pipeline items={opportunities} onAdd={() => setModal('Opportunity')} onDelete={removeRecord}/>} 
       {page === 'Tasks' && <Tasks items={tasks} onAdd={() => setModal('Task')} onDelete={removeRecord} onComplete={completeTask}/>} 
-      {page === 'Users' && isAdmin && <Users users={data.users} data={data} onEdit={setEditingUser} onDelete={deleteUser}/>} 
-    </main>{modal && <RecordForm kind={modal} users={data.users} currentUser={session} onSave={record => saveRecord(modal === 'Customer' ? 'customers' : modal === 'Task' ? 'tasks' : 'opportunities', record)} onClose={() => setModal(null)}/>} {editingUser && <UserEditor user={editingUser} onSave={updateUser} onClose={() => setEditingUser(null)}/>}</div>
+      {page === 'Users' && isAdmin && <Users users={data.users} data={data} onDelete={deleteUser}/>} 
+      {page === 'My Profile' && !isAdmin && <Profile user={session} onSave={updateOwnProfile}/>} 
+    </main>{modal && <RecordForm kind={modal} users={data.users} currentUser={session} onSave={record => saveRecord(modal === 'Customer' ? 'customers' : modal === 'Task' ? 'tasks' : 'opportunities', record)} onClose={() => setModal(null)}/>}</div>
 }
 
 function Dashboard({ isAdmin, data, users, customers, deals, tasks, onAdd, activity = [] }) {
@@ -122,6 +132,6 @@ function Pipeline({items,onAdd,onDelete}) { return <section><div className="page
 function Tasks({items,onAdd,onDelete,onComplete}) { return <section><div className="page-heading"><div><p className="eyebrow">FOLLOW-UPS</p><h2>Tasks</h2><p className="muted">Keep your important work moving.</p></div><button className="primary" onClick={onAdd}>+ Add task</button></div><article className="panel task-list">{items.map(task => <div className={task.done ? 'task done' : 'task'} key={task.id}><input type="checkbox" checked={task.done} onChange={() => onComplete(task.id)}/><div><b>{task.name}</b><small>{task.due || 'No due date'} · {task.priority} priority</small></div><button className="danger" onClick={() => onDelete('tasks',task.id)}>Delete</button></div>)}{!items.length && <Empty text="No tasks yet."/>}</article></section> }
 function TeamRows({ users, data, compact = false }) { return <div className={compact ? 'performance compact' : 'performance'}>{users.map(user => { const customers = data.customers.filter(customer => customer.ownerId === user.id).length; const tasks = data.tasks.filter(task => task.ownerId === user.id && !task.done).length; const deals = data.opportunities.filter(deal => deal.ownerId === user.id && !['Won','Lost'].includes(deal.stage)); const value = deals.reduce((sum, deal) => sum + Number(deal.value || 0), 0); return <div className="performance-row" key={user.id}><span className="avatar">{initials(user.name)}</span><b>{user.name}<small>{user.email}</small></b><span className={`status ${String(user.status || 'Active').toLowerCase()}`}>{user.status || 'Active'}</span><span><b>{customers}</b><small>customers</small></span><span><b>{tasks}</b><small>open tasks</small></span><span><b>{deals.length}</b><small>pipeline deals</small></span><span><b>{currency(value)}</b><small>pipeline value</small></span></div> })}{!users.length && <Empty text="No users have signed up yet."/>}</div> }
 function TeamPerformance({users,data}) { return <section><div className="page-heading"><div><p className="eyebrow">ADMIN EXCLUSIVE</p><h2>Team performance</h2><p className="muted">See what every user is working on and their current workload.</p></div></div><article className="panel"><TeamRows users={users} data={data}/></article></section> }
-function Users({users,data,onEdit,onDelete}) { return <section><div className="page-heading"><div><p className="eyebrow">ADMINISTRATION</p><h2>Users</h2><p className="muted">Manage every locally registered account.</p></div></div><div className="user-grid">{users.map(user => { const userCustomers = data.customers.filter(customer => customer.ownerId === user.id).length; const userTasks = data.tasks.filter(task => task.ownerId === user.id && !task.done).length; const userDeals = data.opportunities.filter(deal => deal.ownerId === user.id && !['Won','Lost'].includes(deal.stage)).length; return <article className="user-card" key={user.id}><span className="avatar">{initials(user.name)}</span><h3>{user.name}</h3><p>{user.email}</p><span className={`status ${String(user.status || 'Active').toLowerCase()}`}>{user.status || 'Active'}</span><span className="role">{user.role}</span><div><b>{userCustomers}</b><small>customers</small><b>{userTasks}</b><small>open tasks</small><b>{userDeals}</b><small>pipeline deals</small></div><footer><button onClick={() => onEdit(user)}>Edit</button><button className="danger" onClick={() => onDelete(user)}>Remove</button></footer></article> })}{!users.length && <Empty text="No users have signed up yet."/>}</div></section> }
+function Users({users,data,onDelete}) { return <section><div className="page-heading"><div><p className="eyebrow">ADMINISTRATION</p><h2>Users</h2><p className="muted">All accounts are User portals. Personal details and status are controlled by each user.</p></div></div><div className="user-grid">{users.map(user => { const userCustomers = data.customers.filter(customer => customer.ownerId === user.id).length; const userTasks = data.tasks.filter(task => task.ownerId === user.id && !task.done).length; const userDeals = data.opportunities.filter(deal => deal.ownerId === user.id && !['Won','Lost'].includes(deal.stage)).length; return <article className="user-card" key={user.id}><span className="avatar">{initials(user.name)}</span><h3>{user.name}</h3><p>{user.email}</p><span className={`status ${String(user.status || 'Active').toLowerCase()}`}>{user.status || 'Active'}</span><span className="role">User portal</span><div><b>{userCustomers}</b><small>customers</small><b>{userTasks}</b><small>open tasks</small><b>{userDeals}</b><small>pipeline deals</small></div><footer><button className="danger" onClick={() => onDelete(user)}>Remove user</button></footer></article> })}{!users.length && <Empty text="No users have signed up yet."/>}</div></section> }
 
 export default App
