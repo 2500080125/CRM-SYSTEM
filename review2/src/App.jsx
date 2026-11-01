@@ -26,16 +26,19 @@ function Auth({ onAuthenticate, adminOnly = false }) {
   const [mode, setMode] = useState('login')
   const [form, setForm] = useState({ name: '', email: '', password: '' })
   const [message, setMessage] = useState('')
+  const [loading, setLoading] = useState(false)
   const update = event => setForm({ ...form, [event.target.name]: event.target.value })
   const submit = event => {
     event.preventDefault()
+    if (loading) return
     const state = readState()
     const email = form.email.trim().toLowerCase()
     if (!email || !form.password) return setMessage('Enter your email and password.')
     if (!/^\S+@\S+\.\S+$/.test(email)) return setMessage('Enter a valid Gmail or email address.')
     if (adminOnly) {
       if (email !== ADMIN.email || form.password !== ADMIN.password) return setMessage('Invalid administrator email or password.')
-      onAuthenticate(ADMIN)
+      setLoading(true)
+      window.setTimeout(() => onAuthenticate(ADMIN), 2000)
       return
     }
     if (mode === 'signup') {
@@ -50,7 +53,8 @@ function Auth({ onAuthenticate, adminOnly = false }) {
     if (!account) return setMessage('No account exists with this email. Sign up to create your account.')
     if (account.password !== form.password) return setMessage('Incorrect password. Please try again.')
     const user = account
-    onAuthenticate(user)
+    setLoading(true)
+    window.setTimeout(() => onAuthenticate(user), 2000)
   }
   return <main className="auth-shell">
     <section className="auth-story"><div className="rain"/><span className="brand">P</span><p className="eyebrow">PEL CRM PLATFORM</p><h1>Build better customer relationships.</h1></section>
@@ -60,7 +64,7 @@ function Auth({ onAuthenticate, adminOnly = false }) {
         {!adminOnly && mode === 'signup' && <label>Full name<input name="name" value={form.name} onChange={update} placeholder="Your full name"/></label>}
         <label>Email<input name="email" type="email" value={form.email} onChange={update} placeholder="you@example.com"/></label>
         <label>Password<input name="password" type="password" value={form.password} onChange={update} placeholder="Create a password"/></label>
-        {message && <p className="form-error">{message}</p>}<button className="primary wide" type="submit">{adminOnly || mode === 'login' ? 'Sign in' : 'Create account'}</button>
+        {message && <p className="form-error">{message}</p>}<button className="primary wide login-button" type="submit" disabled={loading}>{loading ? <><span className="button-spinner"/> Signing in…</> : adminOnly || mode === 'login' ? 'Sign in' : 'Create account'}</button>
       </form>
       <p className="auth-note">{adminOnly ? 'Admin page: /admin' : 'No server or database: user credentials and CRM records use Local Storage.'}</p>
     </section>
