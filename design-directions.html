@@ -1,0 +1,23 @@
+<div id="pel-design-directions">
+  <style>
+    #pel-design-directions{font-family:Inter,system-ui,sans-serif;color:#182230;padding:18px 0}
+    #pel-design-directions *{box-sizing:border-box}
+    #pel-design-directions .intro{margin-bottom:16px}.intro h2{margin:0 0 5px;font-size:20px;font-weight:500}.intro p{margin:0;color:#64748b;font-size:13px}
+    #pel-design-directions .choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+    #pel-design-directions .choice{border:1px solid #d7dee7;border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 8px 22px #1f29370d}
+    #pel-design-directions .choice h3{font-size:14px;margin:14px 16px 4px;font-weight:500}.choice p{font-size:11px;color:#64748b;margin:0 16px 12px}
+    #pel-design-directions .screen{margin:0 11px 11px;border-radius:9px;overflow:hidden;min-height:205px;padding:11px}
+    .screen .mini-top{height:15px;border-bottom:1px solid currentColor;opacity:.25;margin-bottom:10px}.screen .mini-title{font-size:12px;font-weight:500;margin-bottom:9px}.screen .mini-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.screen .mini-card{height:35px;padding:7px;border-radius:6px;font-size:8px}.screen .mini-chart{height:67px;margin-top:8px;border-radius:6px;position:relative;overflow:hidden}.screen .mini-chart:after{content:"";position:absolute;left:8%;right:8%;bottom:17%;height:48%;border-top:2px solid currentColor;transform:skewY(-10deg);opacity:.55}
+    .editorial{background:#f7f4ee;color:#18324b}.editorial .mini-card{background:#fff;border:1px solid #e6dfd3}.editorial .mini-chart{background:#fff;border:1px solid #e6dfd3}.editorial .mini-grid{grid-template-columns:repeat(2,1fr)}
+    .midnight{background:#131b2b;color:#dbe6f2}.midnight .mini-card{background:#1f2a3e;color:#b9c7d8}.midnight .mini-chart{background:#1f2a3e}.midnight .mini-grid{grid-template-columns:repeat(3,1fr)}
+    .studio{background:#eef5f3;color:#183c39}.studio .mini-card{background:#fff;border-left:3px solid #43a88a}.studio .mini-chart{background:#fff;border:1px solid #d2e7df}.studio .mini-grid{grid-template-columns:repeat(3,1fr)}
+    #pel-design-directions .tag{display:inline-block;margin:0 16px 16px;border-radius:999px;background:#edf2f7;color:#52606d;padding:5px 9px;font-size:10px}
+    @media(max-width:760px){#pel-design-directions .choices{grid-template-columns:1fr}.screen{min-height:190px}}
+  </style>
+  <div class="intro"><h2>PEL dashboard design directions</h2><p>Choose the visual language for the next interface redesign.</p></div>
+  <div class="choices">
+    <section class="choice"><h3>01 · Editorial executive</h3><p>Warm, premium, presentation-ready</p><div class="screen editorial"><div class="mini-top"></div><div class="mini-title">Good morning, Eswar</div><div class="mini-grid"><div class="mini-card">Revenue<br><b>₹ 84.6L</b></div><div class="mini-card">Customers<br><b>248</b></div></div><div class="mini-chart">Revenue performance</div></div><span class="tag">Best for a classic review</span></section>
+    <section class="choice"><h3>02 · Midnight command center</h3><p>Confident, modern, analytics-focused</p><div class="screen midnight"><div class="mini-top"></div><div class="mini-title">Portfolio overview</div><div class="mini-grid"><div class="mini-card">Pipeline<br><b>₹ 84.6L</b></div><div class="mini-card">Win rate<br><b>31.6%</b></div><div class="mini-card">Tasks<br><b>12</b></div></div><div class="mini-chart">Revenue performance</div></div><span class="tag">Best for a product demo</span></section>
+    <section class="choice"><h3>03 · Calm studio workspace</h3><p>Friendly, spacious, operational</p><div class="screen studio"><div class="mini-top"></div><div class="mini-title">Relationship intelligence</div><div class="mini-grid"><div class="mini-card">Customers<br><b>248</b></div><div class="mini-card">Pipeline<br><b>32 deals</b></div><div class="mini-card">Follow-ups<br><b>12</b></div></div><div class="mini-chart">Revenue performance</div></div><span class="tag">Best for everyday usability</span></section>
+  </div>
+</div>

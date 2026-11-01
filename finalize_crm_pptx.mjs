@@ -1,0 +1,10 @@
+import fs from "node:fs/promises";
+import path from "node:path";
+import { pathToFileURL } from "node:url";
+const root=process.cwd();
+const skill="C:/Users/ASUS/.codex/plugins/cache/openai-primary-runtime/presentations/26.915.20218/skills/presentations";
+const { finalizePresentation }=await import(pathToFileURL(path.join(skill,"container_tools/artifact_tool_utils.mjs")).href);
+const workspaceDir=root, candidatePath=path.join(root,".build-crm","crm-project-plan-candidate.pptx"), finalPath=path.join(root,"output","pptx","CRM_System_Project_Plan_Classic.pptx");
+await fs.mkdir(path.dirname(finalPath),{recursive:true}); await fs.mkdir(path.join(root,".codex-finalizer"),{recursive:true});
+const result=await finalizePresentation({workspaceDir,candidatePath,finalPath,pythonExecutable:process.env.RUNTIME_PYTHON,integrityValidatorPath:path.join(skill,"container_tools/inspect_presentation_package_integrity.py"),layoutValidatorPath:path.join(skill,"container_tools/inspect_presentation_layout_geometry.py"),layoutArgs:["--expected-slide-size-emu","12192000,6858000","--validate-heading-fit"],fontPolicy:{basis:"design",families:["Georgia"]},verifyArtifactToolImport:true,receiptPath:path.join(root,".codex-finalizer","pptx-validation-classic.json")});
+console.log(JSON.stringify(result));

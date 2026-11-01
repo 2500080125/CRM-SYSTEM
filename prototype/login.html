@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>PEL | Sign in</title><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="overrides.css"><script src="app.js" defer></script></head>
+<body class="login-page">
+  <main class="login-shell">
+    <section class="login-brand">
+      <div class="brand"><span class="brand-mark">P</span><div><strong>PEL</strong><small>CRM PLATFORM</small></div></div>
+      <p class="section-kicker">CRM SYSTEMS</p>
+      <h1>Grow with<br>clarity.<br>Better decisions.</h1>
+      <p>One calm place for your customers, sales pipeline and follow-ups.</p>
+    </section>
+    <section class="login-card" aria-labelledby="login-title">
+      <p class="section-kicker">WELCOME BACK</p><h2 id="login-title">Sign in to PEL</h2>
+      <p class="muted">Choose the separate workspace you need to access.</p>
+      <p class="portal-choice-note">For the User portal, enter your name and email. A user is created locally only when that email is first used.</p>
+      <form id="login-form">
+        <label for="portal-role">Portal access</label><select id="portal-role" name="portalRole"><option value="admin">Administrator portal</option><option value="user">User portal</option></select>
+        <label for="login-name">Full name</label><input id="login-name" name="fullName" type="text" autocomplete="name" placeholder="Your full name">
+        <label for="login-email">Email</label><input id="login-email" name="loginId" type="email" autocomplete="off" placeholder="Enter your email" required>
+        <label for="login-password">Password</label><input id="login-password" name="accessKey" type="password" autocomplete="new-password" placeholder="Enter your password" required>
+        <p id="login-error" class="login-error" role="alert" aria-live="polite"></p>
+        <button class="primary" type="submit">Sign in</button>
+      </form>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,10 @@
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
+const root = process.cwd();
+const input = path.join(root, 'output', 'pptx', 'PEL_CRM_Project_Review_Professional_8_Slides_Technology_Updated.pptx');
+const output = path.join(root, 'output', 'pptx', 'PEL_CRM_Project_Review_Professional_8_Slides_Technology_Updated_Final.pptx');
+const skill = 'C:/Users/ASUS/.codex/plugins/cache/openai-primary-runtime/presentations/26.915.20218/skills/presentations';
+const { finalizePresentation } = await import(pathToFileURL(path.join(skill, 'container_tools/artifact_tool_utils.mjs')).href);
+const result = await finalizePresentation({ workspaceDir: root, candidatePath: input, finalPath: output, pythonExecutable: 'C:/Users/ASUS/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe', integrityValidatorPath: path.join(skill, 'container_tools/inspect_presentation_package_integrity.py'), layoutValidatorPath: path.join(skill, 'container_tools/inspect_presentation_layout_geometry.py'), layoutArgs: ['--expected-slide-size-emu', '12192000,6858000', '--validate-heading-fit'], fontPolicy: { basis: 'design', families: ['Georgia', 'Aptos'] }, verifyArtifactToolImport: true, receiptPath: path.join(root, '.codex-finalizer', 'pel-professional-review-technology.validation.json') });
+console.log(JSON.stringify(result));

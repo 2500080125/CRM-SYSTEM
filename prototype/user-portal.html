@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>PEL | User Portal</title><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="overrides.css"><script src="app.js" defer></script></head>
+<body class="feature-page" data-page="user-portal.html">
+<div class="app-shell">
+<aside class="sidebar">
+  <div class="brand"><span class="brand-mark">P</span><div><strong>PEL</strong><small>CRM PLATFORM</small></div></div>
+  <div class="workspace-label">MY WORKSPACE</div>
+  <nav aria-label="User navigation"><a class="nav-item active" href="user-portal.html"><span>◉</span>My portal</a><a class="nav-item" href="user-profile.html"><span>◌</span>My profile</a><a class="nav-item" href="user-tasks.html"><span>✓</span>My tasks</a><a class="nav-item" href="user-opportunities.html"><span>◫</span>My opportunities</a><a class="nav-item" href="user-customers.html"><span>♙</span>My customers</a></nav>
+  <div class="sidebar-bottom"><button class="user" type="button" id="sidebar-profile" aria-label="Open profile menu"><span class="avatar">SC</span><span class="user-copy"><strong data-user-name>Eswar Charan</strong><small>User</small></span><span class="chevron">⌄</span></button></div>
+</aside>
+<main class="main">
+  <header class="topbar"><div><div class="eyebrow" id="today-label"></div><h1>My portal</h1></div><div class="top-actions"><button class="icon-button" id="theme-toggle" aria-label="Toggle dark mode">◐</button><button class="profile-button" id="profile-button" aria-label="Open profile menu"><span class="avatar small">SC</span><span data-short-name>Eswar</span><span>⌄</span></button></div></header>
+  <section class="hero-row"><div><p class="section-kicker">USER PORTAL</p><h2>My workspace</h2><p class="muted">Your saved CRM records and follow-ups in one place.</p></div></section>
+  <div class="metric-grid" id="user-portal-metrics"></div>
+  <div class="user-portal-grid"><article class="panel" id="user-portal-profile"></article><article class="panel"><div class="panel-heading"><div><h3>My pending tasks</h3><p class="muted">Tasks that still need attention</p></div></div><div id="user-portal-tasks"></div></article></div>
+  <div class="user-portal-grid"><article class="panel"><div class="panel-heading"><div><h3>My active opportunities</h3><p class="muted">Current deals in progress</p></div></div><div id="user-portal-opportunities"></div></article><article class="panel"><div class="panel-heading"><div><h3>My customers</h3><p class="muted">Saved customer records</p></div></div><div id="user-portal-customers"></div></article></div>
+</main></div>
+<div class="js-menu profile-menu" id="profile-menu"><strong data-user-name>Eswar Charan</strong><small>User</small><button id="logout" class="text-button" type="button">Log out</button></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body></html>

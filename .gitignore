@@ -1,0 +1,18 @@
+# Dependencies and generated frontend builds
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+.vite/
+
+# Generated working files and local environment data
+.build-*/
+.codex-finalizer/
+output/
+*.log
+.env
+.env.*
+
+# Operating-system files
+.DS_Store
+Thumbs.db

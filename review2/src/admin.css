@@ -1,0 +1,4 @@
+/* Admin performance overrides: every user gets customers, tasks, pipeline deals and value. */
+.performance-row { grid-template-columns:40px minmax(150px,1.4fr) 95px repeat(4,minmax(88px,1fr)); }
+@media (max-width:950px) { .performance-row { grid-template-columns:40px 1fr 90px; } .performance-row > span:nth-last-child(-n+4) { display:none; } }
+@media (max-width:560px) { .performance-row { grid-template-columns:35px 1fr; } .performance-row > span:nth-last-child(-n+4) { display:block;grid-column:2; } }
