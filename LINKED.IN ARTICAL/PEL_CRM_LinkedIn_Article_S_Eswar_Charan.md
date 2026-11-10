@@ -1,32 +1,52 @@
-# Building PEL CRM: A Frontend CRM Experience with Separate Admin and User Portals
+# Building PEL CRM: Upgraded with React + Vite
 
-I am excited to share **PEL CRM**, a frontend CRM project I built to explore how a professional business workspace can be designed using only **HTML, CSS, and JavaScript**.
+I am excited to share the upgraded version of **PEL CRM**, developed as part of my BTech AI & Data Science coursework at KL University.
 
-PEL CRM helps organise customer relationships, sales opportunities, tasks, reminders, and performance insights in one visually engaging workspace. The project uses a bright Monsoon-inspired visual theme while keeping the interface clear, professional, and easy to navigate.
+This project began as a frontend CRM prototype and is now upgraded with **React and Vite** for a faster, component-based, and structured application.
 
-## What I built
+## What PEL CRM does
 
-- A secure-looking local sign-in experience for a frontend prototype
-- Separate **Administrator Portal** and **User Portal** entry points
-- Customer management interface with search, status labels, edit, delete, sorting, pagination, and CSV/PDF export preview
-- Kanban-style sales pipeline with opportunity stages, labels, modify/delete controls, and drag-and-drop stage movement
-- Task workspace with priorities, due dates, completion tracking, calendar-style ordering, and priority follow-ups
-- Dashboard analytics with revenue bars, pipeline-stage charts, task completion visuals, win rate, and activity summaries
-- User-only pages for profile, pending tasks, active opportunities, and customer records
-- Light/dark mode, Hindi and Telugu interface support, keyboard shortcuts, notifications, validation messages, and responsive layouts
+PEL CRM helps users manage customers, sales-pipeline opportunities, tasks, follow-ups, profiles, and dashboard preferences.
 
-## Why HTML, CSS, and JavaScript?
+It has two separate modules:
 
-- **HTML** creates the structure of the login screen, dashboards, forms, tables, navigation, and portal pages.
-- **CSS** creates the Monsoon visual identity, responsive grids, charts, cards, priority colours, and dark mode.
-- **JavaScript** powers login flow, browser-local records, validation, filtering, charts, portal routing, edit/delete actions, and language switching.
+- **User Portal:** Each user manages only their own customers, opportunities, and tasks.
+- **Admin Portal:** The administrator views registered users, monitors user-wise CRM records, assigns records, and manages the workspace.
 
-This project is intentionally frontend-only. Data is stored locally in the browser for demonstration, which made it a useful exercise in designing product behaviour and user experience before connecting a backend, database, or cloud service.
+## Technologies used
 
-Building PEL CRM strengthened my understanding of UI design, frontend state management, dashboard visualisation, and role-based product flows. My next step is to connect the prototype to a real backend so that authentication, user-specific records, and permissions become production-ready.
+- **React:** Reusable components and dynamic UI updates without reloading pages.
+- **Vite:** Fast development server and optimized production build.
+- **HTML and CSS:** Structure, responsive layouts, dashboard cards, forms, modals, and the Monsoon-inspired visual design.
+- **JavaScript:** Validation, CRUD operations, filters, task completion, role-based views, and notifications.
+- **Local Storage:** Persists users, customers, opportunities, tasks, settings, and activity in the browser.
+- **Session Storage:** Holds the active login session and current role until the browser session ends.
+- **GitHub and Vercel:** Version control and live deployment.
 
-**Built by:** S. ESWAR CHARAN  
+## Key features
+
+- User sign-up and sign-in
+- Separate Admin login page at `/admin`
+- Role-based Admin and User dashboards
+- Add, edit, and delete customers, pipeline opportunities, and tasks
+- Task priority, due date, notes, and completion tracking
+- User-wise record ownership and Admin assignment
+- Dashboard metrics for customers, pipeline value, and pending tasks
+- Dark/light toggle, language and layout preferences
+- Login loading state, validation messages, and delete-confirmation pop-ups
+- Browser-based persistence after refresh
+
+## What I learned
+
+This project helped me understand React state management, reusable components, browser storage, role-based rendering, GitHub version control, and Vercel deployment.
+
+This is a frontend-only academic project. Its browser-based storage is suitable for demonstration, but a production version would require a backend, secure password handling, and a database for multi-device access.
+
+**Live Project:** https://crm-system-nine-olive.vercel.app  
+**GitHub Repository:** https://github.com/2500080125/CRM-SYSTEM-PROJECT-  
+
+**Built by:** S. Eswar Charan  
 **Student ID:** 2500080125  
 **Section:** 18  
 
-#WebDevelopment #FrontendDevelopment #JavaScript #HTML #CSS #CRM #DashboardDesign #StudentProject #KLU
+#React #Vite #JavaScript #WebDevelopment #CRM #FrontendDevelopment #LocalStorage #Vercel #GitHub #AIandDataScience #KLUniversity #StudentProject
