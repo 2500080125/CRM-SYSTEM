@@ -1,0 +1,93 @@
+from pathlib import Path
+from reportlab.lib import colors
+from reportlab.lib.enums import TA_CENTER
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.units import mm
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak
+from docx import Document
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.enum.section import WD_SECTION
+from docx.shared import Inches, Pt, RGBColor
+from docx.oxml import OxmlElement
+from docx.oxml.ns import qn
+
+ROOT = Path(__file__).resolve().parent
+OUT = ROOT / 'output' / 'final-review'
+OUT.mkdir(parents=True, exist_ok=True)
+PDF = OUT / 'PEL_CRM_Project_Report_Team.pdf'
+DOCX = OUT / 'PEL_CRM_Project_Documentation_Team.docx'
+
+NAVY = '#102A43'; BLUE = '#2F5FE3'; TEAL = '#0E8C8C'; GOLD = '#D6A64A'; INK = '#1D3557'; MUTED = '#627D98'; PALE = '#EEF4FB'; BORDER = '#D9E3F0'
+
+def hexcolor(value): return colors.HexColor(value)
+
+def build_pdf():
+    styles = getSampleStyleSheet()
+    title = ParagraphStyle('TitleX', parent=styles['Title'], fontName='Helvetica-Bold', fontSize=27, leading=33, textColor=hexcolor(NAVY), alignment=TA_CENTER, spaceAfter=12)
+    sub = ParagraphStyle('Sub', parent=styles['BodyText'], fontName='Helvetica', fontSize=12, leading=17, textColor=hexcolor(MUTED), alignment=TA_CENTER)
+    kicker = ParagraphStyle('Kicker', parent=styles['BodyText'], fontName='Helvetica-Bold', fontSize=8.5, leading=11, textColor=hexcolor(BLUE), spaceBefore=8, spaceAfter=5)
+    h1 = ParagraphStyle('H1X', parent=styles['Heading1'], fontName='Helvetica-Bold', fontSize=20, leading=25, textColor=hexcolor(NAVY), spaceBefore=9, spaceAfter=8)
+    h2 = ParagraphStyle('H2X', parent=styles['Heading2'], fontName='Helvetica-Bold', fontSize=12, leading=16, textColor=hexcolor(BLUE), spaceBefore=8, spaceAfter=5)
+    body = ParagraphStyle('BodyX', parent=styles['BodyText'], fontName='Helvetica', fontSize=10.4, leading=15, textColor=hexcolor(INK), spaceAfter=7)
+    small = ParagraphStyle('SmallX', parent=body, fontSize=8.5, leading=11.5, textColor=hexcolor(MUTED))
+    head = ParagraphStyle('HeadX', parent=body, fontName='Helvetica-Bold', fontSize=9, leading=11, textColor=colors.white)
+    bold = ParagraphStyle('BoldX', parent=body, fontName='Helvetica-Bold')
+    def p(text, style=body): return Paragraph(text, style)
+    def bullet(text): return Paragraph('• ' + text, ParagraphStyle('bullet'+str(len(text)), parent=body, leftIndent=13, firstLineIndent=-8, spaceAfter=4))
+    def table(rows, widths=(44*mm,130*mm)):
+        t = Table([[p(a,bold), p(b,body)] for a,b in rows], colWidths=widths)
+        t.setStyle(TableStyle([('BACKGROUND',(0,0),(0,-1),hexcolor(PALE)),('BACKGROUND',(1,0),(1,-1),colors.white),('GRID',(0,0),(-1,-1),0.45,hexcolor(BORDER)),('VALIGN',(0,0),(-1,-1),'MIDDLE'),('TOPPADDING',(0,0),(-1,-1),7),('BOTTOMPADDING',(0,0),(-1,-1),7),('LEFTPADDING',(0,0),(-1,-1),8),('RIGHTPADDING',(0,0),(-1,-1),8)]))
+        return t
+    def footer(canvas, doc):
+        canvas.saveState(); canvas.setFillColor(hexcolor(NAVY)); canvas.rect(0,0,210*mm,7*mm,fill=1,stroke=0)
+        canvas.setFillColor(colors.white); canvas.setFont('Helvetica-Bold',7.5); canvas.drawString(18*mm,2.5*mm,'PEL CRM  |  FRONTEND PROJECT REVIEW')
+        canvas.drawRightString(192*mm,2.5*mm,f'Page {doc.page}'); canvas.restoreState()
+    story=[]
+    story += [Spacer(1,24*mm), p('PEL CRM', ParagraphStyle('coverK', parent=kicker, alignment=TA_CENTER, fontSize=10, textColor=hexcolor(BLUE))), p('Project Review Report',title), p('Frontend CRM system with separate User and Administrator portals',sub), Spacer(1,12*mm)]
+    identity = Table([[p('Project team',bold),p('S. Eswar Charan  -  2500080125',body)],[p('Project team',bold),p('S. Lakshmi Charan  -  2500080176',body)],[p('Project team',bold),p('Ponesh  -  2500080223',body)],[p('Section',bold),p('18',body)],[p('Programme',bold),p('BTech AI and Data Science, KL University Vijayawada',body)]], colWidths=[42*mm,132*mm])
+    identity.setStyle(TableStyle([('BACKGROUND',(0,0),(0,-1),hexcolor(PALE)),('GRID',(0,0),(-1,-1),0.45,hexcolor(BORDER)),('VALIGN',(0,0),(-1,-1),'MIDDLE'),('TOPPADDING',(0,0),(-1,-1),8),('BOTTOMPADDING',(0,0),(-1,-1),8),('LEFTPADDING',(0,0),(-1,-1),9)]))
+    story += [identity, Spacer(1,12*mm), p('Project scope',h2), p('PEL CRM is a frontend-only Customer Relationship Management application. It demonstrates role-based interfaces, interactive CRM records, browser-based persistence, and a polished review workflow without a backend database or external API.',body), PageBreak()]
+    story += [p('01  PROJECT OVERVIEW',kicker), p('Purpose and problem statement',h1), p('Sales work often becomes difficult when customer details, opportunities, and follow-ups are separated. PEL CRM brings these activities into one browser-based workspace. A user sees only their own records, while the administrator sees overall user activity and can manage records across the local workspace.',body), p('Project objectives',h2)]
+    story += [bullet('Provide separate User and Administrator portal experiences.'),bullet('Create, edit, delete, search, filter, import, and export CRM records.'),bullet('Track customer opportunities through a visual pipeline.'),bullet('Manage tasks with due dates, notes, priority, completion, and calendar visibility.'),bullet('Present browser-stored data through metrics, analytics, activity history, and notifications.'),p('02  TECHNOLOGY STACK',kicker),p('HTML CSS JavaScript React and Vite',h1),table([('HTML','Provides accessible page structure for forms, navigation, tables, modals, dashboard sections, and controls.'),('CSS','Builds the responsive Monsoon visual system, theme toggle, component states, transitions, calendar, charts, and mobile layout.'),('JavaScript','Handles validation, CRUD actions, filtering, CSV handling, drag and drop, analytics calculations, and UI feedback.'),('React','Organizes the application into reusable components and keeps portal screens in sync with application state.'),('Vite','Provides the React development environment and production build process.')]),PageBreak()]
+    story += [p('03  PORTAL STRUCTURE',kicker),p('User and Administrator portals',h1),table([('User portal','Login and sign up, personal dashboard, own customers, own pipeline, own tasks, profile, settings, and personal browser preferences.'),('Administrator portal','Restricted /admin login, overall dashboard, user list, customer/pipeline/task management by owner, workspace settings, and administrator activity.'),('Data separation','User pages filter records by ownerId. The administrator can select a user scope to view and manage assigned records.'),('Data persistence','Local Storage keeps accounts, CRM records, settings, saved views, and activity in the browser. Session Storage holds the current login session.')]),p('04  CURRENT PAGES',kicker),p('Application pages available for the review',h1),table([('Public user entry','User sign in and sign up screen.'),('Public admin entry','Administrator sign in at /admin.'),('User pages','Dashboard, Customers, Pipeline, Tasks, My Profile, Settings.'),('Admin pages','Dashboard, Customers, Pipeline, Tasks, Users, Settings.')]),PageBreak()]
+    story += [p('05  FEATURES',kicker),p('Implemented frontend features',h1),table([('Search and saved views','Search records from the toolbar and save record filters as browser-local views.'),('Dashboard control','Users choose visible dashboard widgets and reorder them in Settings.'),('Pipeline interaction','Drag an opportunity between stages to update its pipeline stage.'),('Task management','Add notes, due date, priority, completion state, calendar view, edit, delete confirmation, and task count.'),('Analytics','Show pipeline value, task completion, high-priority count, and conversion snapshot from entered records.'),('Activity and feedback','Activity timeline, portal notifications, loading skeletons, page transitions, keyboard shortcuts, and toasts.'),('CSV tools','Export current filtered records or import customer, opportunity, and task CSV data.')]),p('06  CREDENTIALS AND DEMO DATA',kicker),p('Administrator access',h1),table([('Administrator name','S. Eswar Charan'),('Administrator email','admin@pel.local'),('Administrator password','PELAdmin@2026'),('Administrator URL','/admin')]),p('User account note',h2),p('User accounts are created through the User portal Sign up screen. Their passwords are stored only in that browser Local Storage and are not hard-coded in the source repository. This report does not guess or invent existing user passwords. For a live demo, use an account already created in the same browser or create a new account before presenting.',body),PageBreak()]
+    story += [p('07  LIVE DEMO',kicker),p('Recommended presentation flow',h1),table([('1','Open the User portal and sign in with a registered browser-local account.'),('2','Add a customer, then show it in the Customers page and dashboard metric.'),('3','Create an opportunity, then drag it to another Pipeline stage.'),('4','Create a High priority task with notes and a due date, then show it on the task calendar.'),('5','Complete the task and show the count update in the sidebar.'),('6','Open the Administrator portal to show user-level records and workspace totals.'),('7','Show Settings, saved views, CSV export, activity timeline, and analytics snapshot.')]),p('08  LIMITATIONS AND FUTURE SCOPE',kicker),p('This review version intentionally stays frontend-only. Local Storage and Session Storage are suitable for a classroom prototype but do not provide production-grade identity protection or multi-device data sharing. A production version would add a secure backend, hashed passwords, role authorization, database persistence, audit logs, and an API.',body),p('Conclusion',h1),p('PEL CRM demonstrates a complete browser-based CRM workflow with clearly separated user and administrator experiences. The project can be demonstrated live without requiring a database, while its implementation leaves clear room for a future full-stack version.',body)]
+    SimpleDocTemplate(str(PDF),pagesize=A4,leftMargin=18*mm,rightMargin=18*mm,topMargin=18*mm,bottomMargin=16*mm).build(story,onFirstPage=footer,onLaterPages=footer)
+
+def shade(cell, fill):
+    tcPr = cell._tc.get_or_add_tcPr(); shd = OxmlElement('w:shd'); shd.set(qn('w:fill'),fill); tcPr.append(shd)
+def set_cell_text(cell, text, bold=False, color='1D3557'):
+    cell.text=''; run=cell.paragraphs[0].add_run(text); run.bold=bold; run.font.name='Aptos'; run.font.size=Pt(10); run.font.color.rgb=RGBColor.from_string(color)
+def build_docx():
+    doc=Document(); sec=doc.sections[0]; sec.top_margin=Inches(.65); sec.bottom_margin=Inches(.65); sec.left_margin=Inches(.75); sec.right_margin=Inches(.75)
+    normal=doc.styles['Normal']; normal.font.name='Aptos'; normal.font.size=Pt(10.5); normal.font.color.rgb=RGBColor.from_string('1D3557')
+    for style,size,color in [('Title',26,'000000'),('Heading 1',18,'000000'),('Heading 2',12,'000000')]:
+        s=doc.styles[style]; s.font.name='Aptos Display' if style!='Normal' else 'Aptos'; s.font.size=Pt(size); s.font.bold=True; s.font.color.rgb=RGBColor.from_string(color)
+    p=doc.add_paragraph(); p.alignment=WD_ALIGN_PARAGRAPH.CENTER; r=p.add_run('PEL CRM'); r.bold=True; r.font.size=Pt(12); r.font.color.rgb=RGBColor.from_string('2F5FE3')
+    p=doc.add_paragraph(style='Title'); p.alignment=WD_ALIGN_PARAGRAPH.CENTER; p.add_run('Project Documentation')
+    p=doc.add_paragraph(); p.alignment=WD_ALIGN_PARAGRAPH.CENTER; r=p.add_run('Frontend CRM System with Separate User and Administrator Portals'); r.italic=True; r.font.color.rgb=RGBColor.from_string('627D98')
+    doc.add_paragraph('')
+    table=doc.add_table(rows=5, cols=2); table.style='Table Grid'
+    for i,(a,b) in enumerate([('Project team','S. Eswar Charan  -  2500080125'),('Project team','S. Lakshmi Charan  -  2500080176'),('Project team','Ponesh  -  2500080223'),('Section','18'),('Programme','BTech AI and Data Science, KL University Vijayawada')]):
+        set_cell_text(table.cell(i,0),a,True,'FFFFFF'); shade(table.cell(i,0),'102A43'); set_cell_text(table.cell(i,1),b)
+    doc.add_page_break()
+    def heading(text): doc.add_heading(text,1)
+    def para(text): doc.add_paragraph(text)
+    def features(rows):
+        t=doc.add_table(rows=1,cols=2); t.style='Table Grid'; set_cell_text(t.cell(0,0),'Area',True,'FFFFFF'); set_cell_text(t.cell(0,1),'Implementation',True,'FFFFFF'); shade(t.cell(0,0),'102A43'); shade(t.cell(0,1),'102A43')
+        for a,b in rows:
+            cells=t.add_row().cells; set_cell_text(cells[0],a,True); shade(cells[0],'EEF4FB'); set_cell_text(cells[1],b)
+    heading('Project Purpose'); para('PEL CRM is a frontend-only Customer Relationship Management application. It keeps customers, opportunities, and follow-ups together in a browser-based workspace. The User portal shows only a user’s own work. The Administrator portal provides an overall workspace view and cross-user record management.')
+    heading('Technology Used'); features([('HTML','Structure for login, forms, navigation, dashboards, tables, modals, and accessible controls.'),('CSS','Responsive Monsoon design, dark mode, layout, page transitions, calendar, component states, and mobile presentation.'),('JavaScript','Validation, CRUD operations, search, filtering, CSV import/export, drag-and-drop, analytics, and UI feedback.'),('React and Vite','Reusable components, state-driven rendering, and a fast development and production build setup.')])
+    heading('Browser Storage Design'); features([('Local Storage','Stores user accounts, customer records, opportunities, tasks, settings, activity, and saved views in the current browser.'),('Session Storage','Stores the current user or administrator session and returns to the login page after the session ends.'),('Scope control','Each CRM record has an ownerId. User pages show records matching the signed-in user. Admin pages can select a user owner scope.')])
+    heading('Portal Pages'); features([('User portal','Login, Sign up, Dashboard, Customers, Pipeline, Tasks, My Profile, Settings.'),('Administrator portal','/admin Login, Dashboard, Customers, Pipeline, Tasks, Users, Settings.')])
+    heading('Implemented Features'); features([('CRM records','Create, edit, delete with confirmation, search, filter, import/export CSV.'),('Pipeline','Stage columns and drag-and-drop opportunity movement.'),('Tasks','Priority, due date, notes, completion state, calendar, sidebar count.'),('Dashboard','Metrics, revenue chart, analytics snapshot, priority follow-ups, activity timeline.'),('Personalization','Language, layout, task order, dashboard widget visibility and order, dark mode.'),('Quality','Loading skeleton, page transitions, toasts, keyboard shortcuts, responsive controls.')])
+    heading('Credentials'); features([('Admin Name','S. Eswar Charan'),('Admin Email','admin@pel.local'),('Admin Password','PELAdmin@2026'),('Admin Path','/admin'),('User Accounts','Created by Sign up in the current browser. Passwords exist only in that browser Local Storage and cannot be recovered from project source code.')])
+    heading('Live Demonstration'); para('Sign in to the User portal. Add a customer, create an opportunity, and add a high-priority task with notes and a due date. Move the opportunity through the pipeline. Complete the task and show the updated dashboard. Then sign in to /admin and show how the administrator sees user-level totals and can manage assigned CRM records.')
+    heading('Limitations and Future Scope'); para('The application intentionally has no backend or database. Browser storage supports a review demonstration but does not provide secure production authentication. A future production version would use secure password hashing, a database, server-side authorization, audit history, and APIs.')
+    for section in doc.sections:
+        footer=section.footer.paragraphs[0]; footer.alignment=WD_ALIGN_PARAGRAPH.CENTER; run=footer.add_run('PEL CRM | Project team: S. Eswar Charan, S. Lakshmi Charan, Ponesh'); run.font.size=Pt(8); run.font.color.rgb=RGBColor.from_string('627D98')
+    doc.save(DOCX)
+
+build_pdf(); build_docx(); print(PDF); print(DOCX)
