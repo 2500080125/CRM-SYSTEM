@@ -64,3 +64,9 @@ body:before{top:2rem;left:-9rem;transform:rotate(-22deg)}body:after{right:-7rem;
 .auth-shell{background:radial-gradient(circle at 10% 15%,#d7f7f3 0,transparent 29rem),radial-gradient(circle at 92% 88%,#ffe7a671 0,transparent 26rem),linear-gradient(120deg,#f7fcff,#edf4ff 48%,#fff7e7);max-width:none}.auth-story{background:linear-gradient(145deg,#0d3b78,#4148bc 52%,#08a5aa);border-color:#ffffff33;box-shadow:0 34px 78px #18324d46;border-radius:27px}.auth-story:before{color:#ffdd74cf}.auth-card{background:#fffffff4;color:#1d3f6a;border-color:#d7e4f3;box-shadow:0 28px 62px #1f46732c;border-radius:25px}.auth-card h2{color:#173960;font-family:Georgia,serif}.switch{background:#edf3fc}.switch .selected{background:#fff;color:#2550bc;box-shadow:0 2px 9px #22385f1c}.auth-note{color:#7085a4}
 .dark{background:#091a2d}.dark .workspace{color:#ecf4ff}.dark .workspace h1,.dark .hero h2,.dark .page-heading h2,.dark .panel h3,.dark .kanban-col h3,.dark .metric strong{color:#f6faff}.dark .metric,.dark .panel,.dark .kanban-col,.dark .user-card,.dark .admin-user-card{background:#122c49ed;border-color:#2b4d70}.dark .deal,.dark .task:hover{background:#10243d;border-color:#2b4d70}.dark .owner-scope,.dark .toolbar-panel{background:#132e4bef;border-color:#2b4d70;color:#eaf3ff}.dark .owner-cards button,.dark .record-actions button{background:#122c49;color:#eaf3ff;border-color:#345879}.dark .table-row,.dark .task,.dark .performance-row,.dark .list>div{border-color:#2b4d70}
 @media(max-width:950px){.sidebar,.admin-portal .sidebar{position:relative;width:auto;height:auto}.workspace{padding:1.8rem}.hero{padding:1.45rem}}@media(max-width:560px){.workspace{padding:1.2rem}.sidebar,.admin-portal .sidebar{padding:1rem}.workspace h1{font-size:2rem}.top-tools{gap:.28rem}}
+
+/* Keep the administrator command-centre title readable in every display mode. */
+.admin-hero h2,
+.dark .admin-hero h2{
+  color:#fff;
+}
