@@ -70,3 +70,12 @@ body:before{top:2rem;left:-9rem;transform:rotate(-22deg)}body:after{right:-7rem;
 .dark .admin-hero h2{
   color:#fff;
 }
+
+/* Match the user welcome panel to the other dark dashboard cards. */
+.dark .user-portal .hero{
+  background:#122c49ed;
+  border-color:#2b4d70;
+  color:#f6faff;
+}
+.dark .user-portal .hero h2{color:#f6faff}
+.dark .user-portal .hero .eyebrow{color:#9fc5ff}
